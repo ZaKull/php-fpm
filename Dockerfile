@@ -2,6 +2,9 @@ FROM php:7.3.6-fpm
 
 LABEL maintainer="Vincent Letourneau <vincent@nanoninja.com>"
 
+ARG PHALCON_VERSION=3.4.2
+ARG PHALCON_EXT_PATH=php7/64bits
+
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     g++ \
@@ -27,6 +30,8 @@ RUN apt-get update && apt-get upgrade -y \
     wget \
     unzip \
     zlib1g-dev \
+    && curl -LO https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz \
+    && tar xzf ${PWD}/v${PHALCON_VERSION}.tar.gz \
     && docker-php-ext-configure gd \
     --with-freetype-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/ \
@@ -60,8 +65,11 @@ RUN apt-get update && apt-get upgrade -y \
     && pecl install mongodb && docker-php-ext-enable mongodb \
     && pecl install redis && docker-php-ext-enable redis \
     && yes '' | pecl install imagick && docker-php-ext-enable imagick \
+    && docker-php-ext-install -j $(getconf _NPROCESSORS_ONLN) ${PWD}/cphalcon-${PHALCON_VERSION}/build/${PHALCON_EXT_PATH} \
     && docker-php-source delete \
     && apt-get remove -y g++ wget \
     && apt-get autoremove --purge -y && apt-get autoclean -y && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* /var/tmp/*
+    && rm -rf /tmp/* /var/tmp/* \
+    && rm -rf ${PWD}/v${PHALCON_VERSION}.tar.gz \
+    && rm -rf ${PWD}/cphalcon-${PHALCON_VERSION} \
