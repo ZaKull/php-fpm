@@ -1,8 +1,8 @@
-FROM php:7.3.6-fpm
+FROM php:7.4.6-fpm
 
 LABEL maintainer="Vincent Letourneau <vincent@nanoninja.com>"
 
-ARG PHALCON_VERSION=3.4.4
+ARG PHALCON_VERSION=4.0.6
 ARG PHALCON_EXT_PATH=php7/64bits
 
 RUN apt-get update && apt-get upgrade -y \
